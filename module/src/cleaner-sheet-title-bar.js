@@ -1,3 +1,13 @@
+function removeTextFromButton(element) {
+    element.title = element.innerText?.trim();
+
+    const nodeIterator = document.createNodeIterator(element, NodeFilter.SHOW_TEXT);
+    let node = undefined;
+    while (node = nodeIterator.nextNode()) {
+        element.removeChild(node);
+    }
+}
+
 function cleanDocumentHeader(app, html) {
     if (html === undefined) return;
 
@@ -10,14 +20,7 @@ function cleanDocumentHeader(app, html) {
         || (Array.isArray(headerButtons) && !headerButtons.length)) return;
 
     for (let headerButton of headerButtons) {
-
-        headerButton.title = headerButton.innerText?.trim();
-
-        const nodeIterator = document.createNodeIterator(headerButton, NodeFilter.SHOW_TEXT);
-        let node = undefined;
-        while (node = nodeIterator.nextNode()) {
-            headerButton.removeChild(node);
-        }
+        removeTextFromButton(headerButton);
     }
 }
 
