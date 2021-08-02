@@ -14,29 +14,16 @@ function cleanDocumentHeader(app, html) {
     const windowHeader = html[0].querySelector("header.window-header");
     if (windowHeader === null || windowHeader === undefined) return;
 
-    const headerButtons = windowHeader.querySelectorAll("a.header-button");
-    if (headerButtons === null
-        || headerButtons === undefined
-        || (Array.isArray(headerButtons) && !headerButtons.length)) return;
-
-    for (let headerButton of headerButtons) {
-        removeTextFromButton(headerButton);
-    }
-
     setTimeout(() => {
-        handlePopoutModule(windowHeader);
+        const headerButtons = windowHeader.querySelectorAll("a");
+        if (headerButtons === null
+            || headerButtons === undefined
+            || (Array.isArray(headerButtons) && !headerButtons.length)) return;
+
+        for (let headerButton of headerButtons) {
+            removeTextFromButton(headerButton);
+        }
     }, 100);
-}
-
-function handlePopoutModule(windowHeader) {
-    if (game.modules.get("popout")) {
-        const popoutButton = windowHeader.querySelector("a[id*=popout]");
-        if (popoutButton === null
-            || popoutButton === undefined
-            || (Array.isArray(popoutButton) && !popoutButton.length)) return;
-
-        removeTextFromButton(popoutButton);
-    }
 }
 
 Hooks.on('renderApplication', cleanDocumentHeader);
