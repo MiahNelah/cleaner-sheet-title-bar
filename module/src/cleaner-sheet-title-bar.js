@@ -13,7 +13,7 @@ function cleanDocumentHeader(app, html) {
 
     // When using PopOut! module, button text is reset when you pop window in.
     // In this case, html is just form and not all window. So, we find parent window to get header section
-    const header = ( "form".localeCompare(html[0].tagName, undefined, { sensitivity: 'base' }) > 0 )
+    const header = ( "form".localeCompare(html[0].tagName, undefined, { sensitivity: 'base' }) === 0 )
         ? html[0].parentElement.parentElement
         : html[0];
 
