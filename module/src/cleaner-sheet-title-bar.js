@@ -1,4 +1,4 @@
-function removeHeader(app, html) {
+function cleanDocumentHeader(app, html) {
     if (html === undefined) return;
 
     const sheetHeader = html[0].querySelector("header.window-header");
@@ -21,10 +21,9 @@ function removeHeader(app, html) {
     }
 }
 
-Hooks.on('renderApplication', removeHeader);
-Hooks.on('renderDocumentSheet', removeHeader);
-Hooks.on('renderActorSheet', removeHeader);
-Hooks.on('renderJournalSheet', removeHeader);
-Hooks.on('renderItemSheet', removeHeader);
-Hooks.on('renderRollTableConfig', removeHeader);
-
+Hooks.on('renderApplication', cleanDocumentHeader);
+Hooks.on('renderDocumentSheet', cleanDocumentHeader);
+Hooks.on('renderActorSheet', cleanDocumentHeader);
+Hooks.on('renderJournalSheet', cleanDocumentHeader);
+Hooks.on('renderItemSheet', cleanDocumentHeader);
+Hooks.on('renderRollTableConfig', cleanDocumentHeader);
