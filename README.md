@@ -12,7 +12,18 @@ This FoundryVTT module remove text from actions in cluttered title bars.
 
 ❤️ Work with all systems
 
-🤝 Work with all other modules
+🤝 Work with all others modules
 
 
 _Minimum Core Version:_ 0.8.8 (but should work with older ones too)
+
+# Compatibility
+
+Modules owner are free to customize window header buttons like they want. However, if they decide to mimic native ones, 
+everything will be handled automatically. I will add some compatibility patch to this module to handle some famous 
+modules, like PopOut!
+
+Supported modules:
+* PopOut !
+
+You found a non-compatible module ? Open an issue, so I add it to this list 😉
