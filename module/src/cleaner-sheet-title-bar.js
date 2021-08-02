@@ -11,7 +11,13 @@ function removeTextFromButton(element) {
 function cleanDocumentHeader(app, html) {
     if (html === undefined) return;
 
-    const windowHeader = html[0].querySelector("header.window-header");
+    // When using PopOut! module, button text is reset when you pop window in.
+    // In this case, html is just form and not all window. So, we find parent window to get header section
+    const header = ( "form".localeCompare(html[0].tagName, undefined, { sensitivity: 'base' }) > 0 )
+        ? html[0].parentElement.parentElement
+        : html[0];
+
+    const windowHeader = header.querySelector("header.window-header");
     if (windowHeader === null || windowHeader === undefined) return;
 
     setTimeout(() => {
