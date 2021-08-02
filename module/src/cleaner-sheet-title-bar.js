@@ -33,3 +33,5 @@ Hooks.on('renderJournalSheet', cleanDocumentHeader);
 Hooks.on('renderItemSheet', cleanDocumentHeader);
 Hooks.on('renderRollTableConfig', cleanDocumentHeader);
 Hooks.on('renderSidebarTab', cleanDocumentHeader);
+Hooks.on('renderFormApplication', cleanDocumentHeader);
+
