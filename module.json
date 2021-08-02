@@ -14,6 +14,6 @@
     "./styles/brt.css"
   ],
   "url": "https://github.com/Daimakaicho/cleaner-sheet-title-bar",
-  "manifest": "https://github.com/Daimakaicho/cleaner-sheet-title-bar/master/module.json",
+  "manifest": "https://github.com/Daimakaicho/cleaner-sheet-title-bar/module.json",
   "download": "https://github.com/Daimakaicho/cleaner-sheet-title-bar/releases/download/v1.2.1/module.zip"
 }
