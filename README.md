@@ -19,11 +19,5 @@ _Minimum Core Version:_ 0.8.8 (but should work with older ones too)
 
 # Compatibility
 
-Modules owner are free to customize window header buttons like they want. However, if they decide to mimic native ones, 
-everything will be handled automatically. I will add some compatibility patch to this module to handle some famous 
-modules, like PopOut!
-
-Supported modules:
-* PopOut !
-
-You found a non-compatible module ? Open an issue, so I add it to this list 😉
+Useless module is doing something very tricky, every module should be compatible.
+You find some issue? Open an issue, so I add it to this list 😉
