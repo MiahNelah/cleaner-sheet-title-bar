@@ -26,6 +26,18 @@ function cleanDocumentHeader(app, html) {
     }, 100);
 }
 
+function cleanPoppedDocumentHeader(app, poppedWindow) {
+    if (poppedWindow === undefined) return;
+    cleanDocumentHeader(app, $(poppedWindow));
+}
+
+function handlePopout() {
+    if (game.modules.get("popout")) {
+        Hooks.on('PopOut:loaded', cleanPoppedDocumentHeader);
+    }
+}
+
+
 Hooks.on('renderApplication', cleanDocumentHeader);
 Hooks.on('renderDocumentSheet', cleanDocumentHeader);
 Hooks.on('renderActorSheet', cleanDocumentHeader);
@@ -35,3 +47,8 @@ Hooks.on('renderRollTableConfig', cleanDocumentHeader);
 Hooks.on('renderSidebarTab', cleanDocumentHeader);
 Hooks.on('renderFormApplication', cleanDocumentHeader);
 
+
+
+Hooks.on('init', () => {
+    handlePopout();
+});
