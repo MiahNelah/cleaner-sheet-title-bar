@@ -3,7 +3,7 @@
   "title": "Cleaner sheet title bar",
   "description": "This module remove text from actions in cluttered sheet title bar. Text still available on mouse hover. Work with all systems and all modules!",
   "version": "1.2.2",
-  "minimumCoreVersion": "0.8.8",
+  "minimumCoreVersion": "0.8.9",
   "authors": [
     "Daimakaicho#5991"
   ],
