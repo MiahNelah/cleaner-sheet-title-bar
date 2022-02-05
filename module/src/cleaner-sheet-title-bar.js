@@ -1,5 +1,6 @@
 function removeTextFromButton(element) {
-    element.title = element.innerText?.trim();
+    if (element.title === undefined || element.title.trim() === "" )
+        element.title = element.innerText?.trim();
 
     const nodeIterator = document.createNodeIterator(element, NodeFilter.SHOW_TEXT);
     let node = undefined;
