@@ -11,6 +11,9 @@ function removeTextFromButton(element) {
 
 function cleanDocumentHeader(app, html) {
     if (html === undefined) return;
+    
+    // Ignore Wall Height Tool Tip form
+    if (html[0].classList.contains("wall-height-tooltip")) return;  
 
     // When using PopOut! module, button text is reset when you pop window in.
     // In this case, html is just form and not all window. So, we find parent window to get header section
