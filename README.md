@@ -1,6 +1,6 @@
 # Cleaner sheet title bar
 
-This FoundryVTT module remove text from actions in cluttered title bars.
+A simple FoundryVTT module to remove text from actions in cluttered title bars.
 
 ![demo](https://user-images.githubusercontent.com/1334405/127816514-033c9a52-b848-4c7a-b9b9-ca4f65ceaef8.gif)
 
