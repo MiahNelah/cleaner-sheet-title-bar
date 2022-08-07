@@ -1,17 +1,23 @@
 {
-  "name": "cleaner-sheet-title-bar",
-  "title": "Cleaner sheet title bar",
-  "description": "This module remove text from actions in cluttered sheet title bar. Text still available on mouse hover. Work with all systems and all modules!",
-  "version": "1.3.5",
-  "minimumCoreVersion": "9",
-  "compatibleCoreVersion": "9",
-  "authors": [
-    "Daimakaicho#5991"
-  ],
-  "esmodules": [
-    "./module/src/cleaner-sheet-title-bar.js"
-  ],
-  "url": "https://github.com/Daimakaicho/cleaner-sheet-title-bar",
-  "manifest": "https://github.com/Daimakaicho/cleaner-sheet-title-bar/releases/latest/download/module.json",
-  "download": "https://github.com/Daimakaicho/cleaner-sheet-title-bar/releases/download/v1.3.5/module.zip"
+    "id": "cleaner-sheet-title-bar",
+    "title": "Cleaner sheet title bar",
+    "description": "This module remove text from actions in cluttered sheet title bar. Text still available on mouse hover. Work with all systems and all modules!",
+    "version": "1.3.7",
+    "compatibility": {
+        "minimum": 9,
+        "verified": "0.10.276",
+        "maximum": "0.10.276"
+    },
+    "authors": [
+        {
+            "name": "Miah Nelah",
+            "discord": "Miah Nelah#5991"
+        }
+    ],
+    "esmodules": [
+        "./module/src/cleaner-sheet-title-bar.js"
+    ],
+    "url": "https://github.com/Daimakaicho/cleaner-sheet-title-bar",
+    "manifest": "https://github.com/Daimakaicho/cleaner-sheet-title-bar/releases/latest/download/module.json",
+    "download": "https://github.com/Daimakaicho/cleaner-sheet-title-bar/releases/download/v1.3.7/module.zip"
 }
