@@ -3,11 +3,9 @@
     "title": "Cleaner sheet title bar",
     "description": "This module remove text from actions in cluttered sheet title bar. Text still available on mouse hover. Work with all systems and all modules!",
     "version": "0.0.1",
-    "minimumCoreVersion": "0.8.8",
-    "compatibleCoreVersion": 9,
     "compatibility": {
-        "minimum": "0.8.8",
-        "verified": "0.10.276",
+        "minimum": "10.276",
+        "verified": "10.276",
         "maximum": 11
     },
     "authors": [
