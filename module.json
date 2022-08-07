@@ -6,7 +6,7 @@
     "compatibility": {
         "minimum": "0.8.8",
         "verified": "0.10.276",
-        "maximum": "0.10.276"
+        "maximum": 11
     },
     "authors": [
         {
