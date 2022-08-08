@@ -1,12 +1,13 @@
 {
     "id": "cleaner-sheet-title-bar",
+    "name": "cleaner-sheet-title-bar",
     "title": "Cleaner sheet title bar",
     "description": "This module remove text from actions in cluttered sheet title bar. Text still available on mouse hover. Work with all systems and all modules!",
     "version": "0.0.1",
+    "minimumCoreVersion": "9",
     "compatibility": {
-        "minimum": "10.276",
-        "verified": "10.276",
-        "maximum": 11
+        "minimum": "9",
+        "verified": "10.276"
     },
     "authors": [
         {
@@ -18,6 +19,6 @@
         "./module/src/cleaner-sheet-title-bar.js"
     ],
     "url": "https://github.com/Daimakaicho/cleaner-sheet-title-bar",
-    "manifest": "https://github.com/Daimakaicho/cleaner-sheet-title-bar/releases/latest/download/module.json",
+    "manifest": "https://github.com/Daimakaicho/cleaner-sheet-title-bar/releases/download/v0.0.1/module.json",
     "download": "https://github.com/Daimakaicho/cleaner-sheet-title-bar/releases/download/v0.0.1/module.zip"
 }
