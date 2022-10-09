@@ -4,7 +4,7 @@ function removeTextFromButton(element) {
 
     // Maestro compatibility hack
     if (element.className === "hype-track" || element.className === "item-track") {
-        element.getElementsByTagName("span")[0].remove()
+        element.getElementsByTagName("span")[0]?.remove()
         return;
     }
 
