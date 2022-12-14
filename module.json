@@ -21,12 +21,12 @@
     {
       "lang": "en",
       "name": "English",
-      "path": "module/languages/en.json"
+      "path": "./module/languages/en.json"
     },
     {
       "lang": "fr",
       "name": "Français",
-      "path": "module/languages/fr.json"
+      "path": "./module/languages/fr.json"
     }
   ],
   "url": "https://github.com/MiahNelah/cleaner-sheet-title-bar",
