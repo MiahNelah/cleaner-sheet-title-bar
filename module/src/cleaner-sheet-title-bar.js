@@ -1,6 +1,10 @@
 function removeTextFromButton(element) {
-    if (element.title === undefined || element.title.trim() === "")
+    if (element.title === undefined || element.title.trim() === "") {
         element.title = element.innerText?.trim();
+    }
+
+    element.setAttribute("data-tooltip", element.innerText?.trim());
+    element.setAttribute("data-tooltip-direction", "UP");
 
     // Maestro compatibility hack
     if (element.className === "hype-track" || element.className === "item-track") {
