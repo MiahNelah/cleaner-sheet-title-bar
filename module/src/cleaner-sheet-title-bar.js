@@ -2,9 +2,8 @@ function removeTextFromButton(element) {
     // Skip Document Id Link button, data-tooltip is already used natively
     if (element.classList.contains("document-id-link")) return;
     
-    if (element.title === undefined || element.title.trim() === "") {
-        element.title = element.innerText?.trim();
-    }
+    // Remove 'title' attribute to avoid double tooltip
+    element.removeAttribute("title");
 
     element.setAttribute("data-tooltip", element.innerText?.trim());
     element.setAttribute("data-tooltip-direction", "UP");
