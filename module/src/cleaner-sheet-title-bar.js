@@ -1,4 +1,7 @@
 function removeTextFromButton(element) {
+    // Skip Document Id Link button, data-tooltip is already used natively
+    if (element.classList.contains("document-id-link")) return;
+    
     if (element.title === undefined || element.title.trim() === "") {
         element.title = element.innerText?.trim();
     }
