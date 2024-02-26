@@ -24,6 +24,9 @@ function removeTextFromButton(element) {
 function cleanDocumentHeader(app, html) {
     if (html === undefined) return;
 
+    // Official dnd5e character sheet has already compact header: let's skip to not break it
+    if (app.constructor.name === "ActorSheet5eCharacter2") return;
+
     // When using PopOut! module, button text is reset when you pop window in.
     // In this case, html is just form and not all window. So, we find parent window to get header section
     const header = ("form".localeCompare(html[0].tagName, undefined, { sensitivity: 'base' }) === 0)
