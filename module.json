@@ -27,6 +27,11 @@
       "lang": "fr",
       "name": "Français",
       "path": "./module/languages/fr.json"
+    },
+    {
+      "lang": "ja",
+      "name": "日本語",
+      "path": "./module/languages/ja.json"
     }
   ],
   "url": "https://github.com/MiahNelah/cleaner-sheet-title-bar",
