@@ -32,7 +32,12 @@
       "lang": "ja",
       "name": "日本語",
       "path": "./module/languages/ja.json"
-    }
+    },
+    {
+      "lang": "pl",
+      "name": "Polski",
+      "path": "./module/languages/pl.json"
+    },
   ],
   "url": "https://github.com/MiahNelah/cleaner-sheet-title-bar",
   "manifest": "https://github.com/MiahNelah/cleaner-sheet-title-bar/releases/download/v1.4.3/module.json",
