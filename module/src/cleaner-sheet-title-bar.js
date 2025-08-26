@@ -17,7 +17,17 @@ function removeTextFromButton(element) {
     const nodeIterator = document.createNodeIterator(element, NodeFilter.SHOW_TEXT);
     let node = undefined;
     while (node = nodeIterator.nextNode()) {
-        element.removeChild(node);
+        try {
+            element.removeChild(node);
+        } catch(e) {
+            // Error DOMException: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.
+            //console.warn(`cleaner-sheet-title-bar | Error`, e);
+            for(const nodeWithText of element.childNodes) {
+                if(nodeWithText.innerText) {
+                    nodeWithText.innerText = "";
+                }
+            }
+        }
     }
 }
 
