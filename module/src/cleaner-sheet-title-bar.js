@@ -46,7 +46,7 @@ function cleanDocumentHeader(app, html) {
 }
 
 function cleanSheetTabs(app, html) {
-    if (!(app instanceof TokenConfig)
+    if (!(app instanceof foundry.applications.sheets.TokenConfig)
         || !html
         || !game.settings.get("cleaner-sheet-title-bar", "collapse-navbars")) return;
 
