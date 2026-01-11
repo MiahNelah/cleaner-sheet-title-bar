@@ -8,33 +8,42 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4  # ou @v5 si tu veux suivre la dernière major
+        # actions/checkout mentionne désormais v5 et v4 dans sa doc officielle
+        # mais v4 reste le choix le plus courant/stable en prod.
 
       - name: Extract tag version number
         id: get_version
         uses: battila7/get-version-action@v2
 
-      - name: Update module.json version and URLs
-        id: update_json
+      - name: Update module.json (version + URLs)
         uses: restackio/update-json-file-action@2.1
         with:
           file: module.json
-          fields: |
-            version=${{ steps.get_version.outputs.version-without-v }}
-            manifestUrl=https://github.com/${{ github.repository }}/releases/download/${{ github.event.release.tag_name }}/module.json
-            downloadUrl=https://github.com/${{ github.repository }}/releases/download/${{ github.event.release.tag_name }}/module.zip
+          # IMPORTANT: une SEULE chaîne (pas de key=value, pas de multi-lignes)
+          fields: >-
+            {'version':'${{ steps.get_version.outputs.version-without-v }}',
+             'url':'https://github.com/${{ github.repository }}',
+             'manifest':'https://github.com/${{ github.repository }}/releases/download/${{ github.event.release.tag_name }}/module.json',
+             'download':'https://github.com/${{ github.repository }}/releases/download/${{ github.event.release.tag_name }}/module.zip'}
 
-      - name: Create zip
-        run: zip -r ./module.zip module.json module/src/ module/languages/
+      - name: Create module.zip
+        uses: TheDoctor0/zip-release@0.7.6
+        with:
+          type: zip
+          filename: module.zip
+          path: |
+            module.json
+            module/src
+            module/languages
 
       - name: Update Release with Files
-        id: create_version_release
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
           name: ${{ github.event.release.name }}
           draft: false
           token: ${{ secrets.GITHUB_TOKEN }}
-          artifacts: './module.json, ./module.zip'
+          artifacts: "./module.json,./module.zip"
           tag: ${{ github.event.release.tag_name }}
           body: ${{ github.event.release.body }}
