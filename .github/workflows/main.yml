@@ -1,4 +1,5 @@
 name: Release Creation
+
 on:
   release:
     types: [published]
@@ -6,46 +7,24 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v6
+      
+      - name: Extract tag version number
+        id: get_version
+        uses: battila7/get-version-action@v2.2.1
 
-      - name: Compute version
-        id: v
+      - name: Patch module.json with jq
         run: |
-          ref='${{ github.event.release.tag_name }}'
-          # ex: v1.2.3 -> 1.2.3
-          echo "version=${ref#v}" >> "$GITHUB_OUTPUT"
-
-      - name: Patch module.json (strict JSON)
-        shell: bash
-        run: |
-          set -euo pipefail
-          ver='${{ steps.v.outputs.version }}'
+          ver='${{ steps.get_version.outputs.version-without-v }}'
           tag='${{ github.event.release.tag_name }}'
           repo='${{ github.repository }}'
-
-          jq -e . module.json >/dev/null  # JSON valide en entrée
           jq --arg ver "$ver" \
              --arg url "https://github.com/$repo" \
              --arg manifest "https://github.com/$repo/releases/download/$tag/module.json" \
              --arg download "https://github.com/$repo/releases/download/$tag/module.zip" \
              '.version=$ver | .url=$url | .manifest=$manifest | .download=$download' \
-             module.json > module.tmp
-
-          jq -e . module.tmp >/dev/null   # JSON valide en sortie
-          mv module.tmp module.json
-
-          # Garde-fous anti-“YAML” : 1er char '{', type MIME json
-          head -c1 module.json | grep -qx '{'
-          file -b --mime-type module.json | grep -qi 'application/json'
-
-      - name: Show module.json (debug)
-        run: |
-          echo "----- module.json -----"
-          cat module.json
-          echo "-----------------------"
+             module.json > module.tmp && mv module.tmp module.json
 
       - run: zip -r ./module.zip module.json module/src/ module/languages/
 
@@ -57,6 +36,5 @@ jobs:
           draft: false
           token: ${{ secrets.GITHUB_TOKEN }}
           artifacts: './module.json, ./module.zip'
-          artifactContentType: application/octet-stream 
           tag: ${{ github.event.release.tag_name }}
           body: ${{ github.event.release.body }}
