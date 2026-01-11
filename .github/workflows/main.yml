@@ -1,5 +1,4 @@
 name: Release Creation
-
 on:
   release:
     types: [published]
@@ -8,32 +7,37 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6  # dernière version recommandée
-      # https://github.com/actions/checkout
-      # ^ doc montre @v6
+      - uses: actions/checkout@v6
 
-      # extraire la version après le "v"
       - name: Extract tag version number
         id: get_version
         uses: battila7/get-version-action@v2.2.1
-
-      # substituer proprement dans module.json sans changer le format
-      - name: Patch module.json with jq
+      
+      - name: Patch module.json with jq (JSON garanti)
+        shell: bash
         run: |
+          set -euo pipefail
           ver='${{ steps.get_version.outputs.version-without-v }}'
           tag='${{ github.event.release.tag_name }}'
           repo='${{ github.repository }}'
+
+          # Check JSON validity
+          jq -e . module.json >/dev/null
+
+          # Write module.json
           jq --arg ver "$ver" \
              --arg url "https://github.com/$repo" \
              --arg manifest "https://github.com/$repo/releases/download/$tag/module.json" \
              --arg download "https://github.com/$repo/releases/download/$tag/module.zip" \
              '.version=$ver | .url=$url | .manifest=$manifest | .download=$download' \
-             module.json > module.tmp && mv module.tmp module.json
+             module.json > module.tmp
 
-      # créer l’archive
+          # Check JSON validity again
+          jq -e . module.tmp >/dev/null
+          mv module.tmp module.json
+
       - run: zip -r ./module.zip module.json module/src/ module/languages/
 
-      # attacher les fichiers à la release
       - name: Update Release with Files
         uses: ncipollo/release-action@v1
         with:
