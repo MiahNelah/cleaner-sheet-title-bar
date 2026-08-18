@@ -4,43 +4,112 @@ on:
   release:
     types: [published]
 
+# Publishing attaches assets to the release, which needs write access explicitly:
+# repositories default to a read only GITHUB_TOKEN.
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
 
-      - name: Extract tag version number
-        id: get_version
-        uses: battila7/get-version-action@v2
+      - name: Resolve release identity
+        id: release
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+          IS_PRERELEASE: ${{ github.event.release.prerelease }}
+          REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+        run: |
+          version="${TAG#v}"
+
+          # Foundry's isNewerVersion() compares versions part by part and falls back to
+          # string comparison on non numeric parts, so "1.6.0" does NOT sort above
+          # "1.6.0-rc.1". A suffixed version reaching the stable channel would strand
+          # every user on it, with no further update ever offered. Refuse that combination.
+          if [ "${version}" != "${version%%-*}" ] && [ "${IS_PRERELEASE}" != "true" ]; then
+            echo "::error::Tag ${TAG} carries a pre-release suffix but the release is not flagged as a pre-release."
+            exit 1
+          fi
+
+          # A pre-release freezes its manifest on its own tag: testers are never pulled
+          # onto it by an update check, and never pushed off it either, so they have to
+          # reinstall the stable build by hand once it ships.
+          # A stable release advertises the rolling 'latest' manifest, which GitHub
+          # resolves excluding pre-releases. That is what makes auto update work at all:
+          # a manifest frozen on a tag always reports its own version, forever.
+          if [ "${IS_PRERELEASE}" = "true" ]; then
+            manifest="${REPO_URL}/releases/download/${TAG}/module.json"
+          else
+            manifest="${REPO_URL}/releases/latest/download/module.json"
+          fi
+
+          {
+            echo "version=${version}"
+            echo "url=${REPO_URL}"
+            echo "manifest=${manifest}"
+            echo "download=${REPO_URL}/releases/download/${TAG}/module.zip"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Set version
         uses: jossef/action-set-json-field@v2.2
         with:
           file: module.json
           field: version
-          value: ${{ steps.get_version.outputs.version-without-v }}
+          value: ${{ steps.release.outputs.version }}
 
       - name: Set url
         uses: jossef/action-set-json-field@v2.2
         with:
           file: module.json
           field: url
-          value: https://github.com/${{ github.repository }}
+          value: ${{ steps.release.outputs.url }}
 
       - name: Set manifest
         uses: jossef/action-set-json-field@v2.2
         with:
           file: module.json
           field: manifest
-          value: https://github.com/${{ github.repository }}/releases/download/${{ github.event.release.tag_name }}/module.json
+          value: ${{ steps.release.outputs.manifest }}
 
       - name: Set download
         uses: jossef/action-set-json-field@v2.2
         with:
           file: module.json
           field: download
-          value: https://github.com/${{ github.repository }}/releases/download/${{ github.event.release.tag_name }}/module.zip
+          value: ${{ steps.release.outputs.download }}
+
+      # Runs after the rewrites: corrupting module.json while patching it is exactly
+      # what happened before, and it shipped straight to users.
+      - name: Validate package
+        run: |
+          jq empty module.json
+
+          jq -r '.esmodules[], .languages[].path' module.json | while read -r declared; do
+            test -f "${declared#./}" || {
+              echo "::error::module.json declares a missing file: ${declared}"
+              exit 1
+            }
+          done
+
+          # module.json declares these under 'esmodules', and that is how Foundry loads
+          # them. node infers CommonJS from the .js extension, so parse an .mjs copy to
+          # check them under the module goal they actually run as.
+          jq -r '.esmodules[]' module.json | while read -r esmodule; do
+            cp "${esmodule#./}" "${RUNNER_TEMP}/check.mjs"
+            node --check "${RUNNER_TEMP}/check.mjs" || {
+              echo "::error::${esmodule} does not parse as an ES module"
+              exit 1
+            }
+          done
+
+          jq -r '.languages[].path' module.json | while read -r language; do
+            jq empty "${language#./}" || {
+              echo "::error::${language} is not valid JSON"
+              exit 1
+            }
+          done
 
       - name: Create module.zip
         uses: TheDoctor0/zip-release@0.7.6
@@ -49,6 +118,7 @@ jobs:
           filename: module.zip
           path: |
             module.json
+            LICENSE
             module/src
             module/languages
 
@@ -56,9 +126,14 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
-          name: ${{ github.event.release.name }}
-          draft: false
           token: ${{ secrets.GITHUB_TOKEN }}
           artifacts: "./module.json,./module.zip"
           tag: ${{ github.event.release.tag_name }}
-          body: ${{ github.event.release.body }}
+          # Every omit* below protects a field of the release that was authored by hand.
+          # Without them allowUpdates rewrites each one from the action's defaults, which
+          # silently demotes a pre-release to a normal release.
+          omitPrereleaseDuringUpdate: true
+          omitDraftDuringUpdate: true
+          omitNameDuringUpdate: true
+          omitBodyDuringUpdate: true
+          makeLatest: ${{ github.event.release.prerelease && 'false' || 'true' }}
