@@ -4,8 +4,8 @@ on:
   release:
     types: [published]
 
-# Publishing attaches assets to the release, which needs write access explicitly:
-# repositories default to a read only GITHUB_TOKEN.
+# Attaching assets to the release needs write access explicitly: repositories
+# default to a read only GITHUB_TOKEN.
 permissions:
   contents: write
 
@@ -13,10 +13,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
-      - name: Resolve release identity
-        id: release
+      - name: Stamp release metadata into module.json
         env:
           TAG: ${{ github.event.release.tag_name }}
           IS_PRERELEASE: ${{ github.event.release.prerelease }}
@@ -45,43 +44,20 @@ jobs:
             manifest="${REPO_URL}/releases/latest/download/module.json"
           fi
 
-          {
-            echo "version=${version}"
-            echo "url=${REPO_URL}"
-            echo "manifest=${manifest}"
-            echo "download=${REPO_URL}/releases/download/${TAG}/module.zip"
-          } >> "$GITHUB_OUTPUT"
+          # jq reserialises the whole document, so this cannot emit anything but valid
+          # JSON: the failure mode that shipped broken manifests before is now impossible.
+          jq --arg version "${version}" \
+             --arg url "${REPO_URL}" \
+             --arg manifest "${manifest}" \
+             --arg download "${REPO_URL}/releases/download/${TAG}/module.zip" \
+             '.version = $version | .url = $url | .manifest = $manifest | .download = $download' \
+             module.json > module.json.tmp
+          mv module.json.tmp module.json
 
-      - name: Set version
-        uses: jossef/action-set-json-field@v2.2
-        with:
-          file: module.json
-          field: version
-          value: ${{ steps.release.outputs.version }}
+          cat module.json
 
-      - name: Set url
-        uses: jossef/action-set-json-field@v2.2
-        with:
-          file: module.json
-          field: url
-          value: ${{ steps.release.outputs.url }}
-
-      - name: Set manifest
-        uses: jossef/action-set-json-field@v2.2
-        with:
-          file: module.json
-          field: manifest
-          value: ${{ steps.release.outputs.manifest }}
-
-      - name: Set download
-        uses: jossef/action-set-json-field@v2.2
-        with:
-          file: module.json
-          field: download
-          value: ${{ steps.release.outputs.download }}
-
-      # Runs after the rewrites: corrupting module.json while patching it is exactly
-      # what happened before, and it shipped straight to users.
+      # Runs after the rewrite: corrupting module.json while patching it is exactly what
+      # happened before, and it shipped straight to users.
       - name: Validate package
         run: |
           jq empty module.json
@@ -111,29 +87,14 @@ jobs:
             }
           done
 
-      - name: Create module.zip
-        uses: TheDoctor0/zip-release@0.7.6
-        with:
-          type: zip
-          filename: module.zip
-          path: |
-            module.json
-            LICENSE
-            module/src
-            module/languages
+      - name: Build module.zip
+        run: zip --recurse-paths module.zip module.json LICENSE module/src module/languages
 
-      - name: Update Release with Files
-        uses: ncipollo/release-action@v1
-        with:
-          allowUpdates: true
-          token: ${{ secrets.GITHUB_TOKEN }}
-          artifacts: "./module.json,./module.zip"
-          tag: ${{ github.event.release.tag_name }}
-          # Every omit* below protects a field of the release that was authored by hand.
-          # Without them allowUpdates rewrites each one from the action's defaults, which
-          # silently demotes a pre-release to a normal release.
-          omitPrereleaseDuringUpdate: true
-          omitDraftDuringUpdate: true
-          omitNameDuringUpdate: true
-          omitBodyDuringUpdate: true
-          makeLatest: ${{ github.event.release.prerelease && 'false' || 'true' }}
+      # Uploading assets never touches the release itself, so the pre-release flag, the
+      # name and the body keep exactly what was authored by hand. The previous action
+      # rewrote all of them from its own defaults, silently demoting a pre-release.
+      - name: Upload release assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: gh release upload "${TAG}" module.json module.zip --clobber
